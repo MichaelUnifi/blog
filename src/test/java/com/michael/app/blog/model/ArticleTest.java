@@ -7,9 +7,6 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.michael.app.blog.model.Article;
-import com.michael.app.blog.model.Tag;
-
 public class ArticleTest {
 	
 	private int id;
@@ -78,5 +75,4 @@ public class ArticleTest {
 		article.addTag(tag2);
 		assertThat(article.getTags()).hasSize(2);
 	}
-
 }

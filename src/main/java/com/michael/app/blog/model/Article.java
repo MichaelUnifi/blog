@@ -24,15 +24,7 @@ public class Article {
 	}
 	
 	public Article(int id, String title, String content) {
-		super();
-		this.id = id;
-		if(title == null) throw new IllegalArgumentException("Article title cannot be null!");
-		if(title.equals("")) throw new IllegalArgumentException("Article title cannot be an empty string!");
-		if(content == null) throw new IllegalArgumentException("Article content cannot be null!");
-		if(content.equals("")) throw new IllegalArgumentException("Article content cannot be an empty string!");
-		this.setTitle(title);
-		this.setContent(content);
-		this.tags = new HashSet<>();
+		this(id, title, content, new HashSet<>());
 	}
 
 	public int getId() {
@@ -85,5 +77,4 @@ public class Article {
 		return Objects.equals(content, other.content) && id == other.id && Objects.equals(tags, other.tags)
 				&& Objects.equals(title, other.title);
 	}
-
 }
