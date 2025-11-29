@@ -29,7 +29,7 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Sonar Cloud report
-      if: ${{ secrets.SONAR_TOKEN }}
+      if: ${{ env.SONAR_TOKEN }}
       run: mvn sonar:sonar -Psonarcloud
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
