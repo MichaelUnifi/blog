@@ -11,6 +11,10 @@
   <url>http://maven.apache.org</url>
 
   <properties>
+    <maven-failsafe-plugin-version>3.5.4</maven-failsafe-plugin-version>
+    <testcontainers-version>2.0.2</testcontainers-version>
+    <mongodb-version>1.21.3</mongodb-version>
+    <build-helper-maven-plugin-version>3.6.1</build-helper-maven-plugin-version>
     <maven-surefire-report-plugin-version>3.5.4</maven-surefire-report-plugin-version>
     <mongo-java-server-version>1.47.0</mongo-java-server-version>
     <logback-classic-version>1.5.21</logback-classic-version>
@@ -106,8 +110,89 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>${sonar.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${build-helper-maven-plugin-version}</version>
+          <executions>
+            <execution>
+              <id>add-test-source</id>
+              <phase>generate-test-sources</phase>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/it/java</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.48.0</version>
+          <configuration>
+            <images>
+              <image>
+                <name>mongo:5</name>
+                <run>
+                  <ports>
+                    <port>mongo.mapped.port:27017</port>
+                  </ports>
+                </run>
+              </image>
+            </images>
+          </configuration>
+          <executions>
+            <execution>
+              <id>docker-start</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                <goal>start</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>docker-stop</id>
+              <phase>post-integration-test</phase>
+              <goals>
+                <goal>stop</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin-version}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <mongo.host>localhost</mongo.host>
+            <mongo.port>${mongo.mapped.port}</mongo.port>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <profiles>
@@ -227,6 +312,25 @@
           **/model/**,
         </sonar.coverage.exclusions>
       </properties>
+    </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.github.hazendaz.maven</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-report-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
