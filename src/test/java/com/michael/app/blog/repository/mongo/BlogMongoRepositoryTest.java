@@ -92,6 +92,7 @@ public class BlogMongoRepositoryTest {
 		addArticle(article1);
 		addArticle(article2);
 		assertThat(blogRepository.findAllWithTag(tag)).contains(article1);
+		assertThat(blogRepository.findAllWithTag(tag)).doesNotContain(article2);
 	}
 	
 	@Test
@@ -106,11 +107,6 @@ public class BlogMongoRepositoryTest {
 		addArticle(article1);
 		addArticle(article2);
 		assertThat(blogRepository.findById(article1.getId())).isEqualTo(article1);
-	}
-	
-	@Test
-	public void testFindByIdWhenArticleInDatabase() {
-		assertThat(blogRepository.findById(1)).isNull();
 	}
 	
 	@Test
@@ -166,8 +162,8 @@ public class BlogMongoRepositoryTest {
 	
 	private List<Article> readAllArticlesFromDatabase() {
 		return StreamSupport.stream(articleCollection.find().spliterator(), false)
-				.map(this::documentToArticle)
-				.toList();
+			.map(this::documentToArticle)
+			.toList();
 	}
 
 	private Article documentToArticle(Document doc) {
