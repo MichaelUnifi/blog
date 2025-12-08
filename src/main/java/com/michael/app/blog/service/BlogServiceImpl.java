@@ -1,6 +1,6 @@
 package com.michael.app.blog.service;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,27 +58,12 @@ public class BlogServiceImpl implements BlogService {
 		});
 	}
 	
-	@Override
-	public void addTag(String id, String tagLabel) {
-		transactionManager.doInTransaction(repository -> {
-			Article article = repository.findById(id);
-			if(article == null)
-				throw new RuntimeException("Article does not exist!");
-			article.addTag(new Tag(tagLabel));
-			repository.update(article);
-			return null;
-		});
-	}
-	
 	private void validateId(String id, BlogRepository repository) {
 		if(repository.findById(id) == null)
 			throw new RuntimeException("Article does not exist!");
 	}
 	
 	private Set<Tag> toTagSet(Set<String> tagLabels) throws IllegalArgumentException {
-		if (tagLabels == null || tagLabels.isEmpty()) {
-			return new HashSet<>();
-		}
 		try {
 			return tagLabels.stream()
 				.map(Tag::new)

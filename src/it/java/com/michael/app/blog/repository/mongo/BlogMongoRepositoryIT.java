@@ -82,8 +82,11 @@ public class BlogMongoRepositoryIT {
 	@Test
 	public void testSave() {
 		Article article = new Article(id1, "Parmesan eggplants", "I like them");
-		blogRepository.save(article);
-		assertThat(readAllArticlesFromDatabase()).contains(article);
+		Article savedArticle = blogRepository.save(article);
+		assertThat(savedArticle.getId()).isNotNull();
+		assertThat(savedArticle.getTitle()).isEqualTo(article.getTitle());
+		assertThat(savedArticle.getContent()).isEqualTo(article.getContent());
+		assertThat(savedArticle.getTags()).isEqualTo(article.getTags());
 	}
 	
 	@Test

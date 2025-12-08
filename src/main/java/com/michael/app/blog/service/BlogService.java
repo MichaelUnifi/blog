@@ -11,5 +11,4 @@ public interface BlogService {
 	Article saveArticle(String title, String content, Set<String> tags);
 	Article updateArticle(String id, String title, String content, Set<String> tags);
 	void deleteArticle(String id);
-	void addTag(String id1, String string);
 }

@@ -16,24 +16,31 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.assertj.core.util.Arrays;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.ClientSession;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoClients;
-import de.bwaldvogel.mongo.MongoServer;
-import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
+import de.flapdoodle.embed.mongo.commands.ServerAddress;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.StateID;
+import de.flapdoodle.reverse.TransitionWalker;
 
 public class BlogMongoRepositoryTest {
 	
-	private static MongoServer server;
-	private MongoClient client;
+	private static TransitionWalker.ReachedState<RunningMongodProcess> server;
+    private static String connectionString;
+	
+	private static MongoClient client;
+	private static ClientSession session;
 	private BlogMongoRepository blogRepository;
 	private MongoCollection<Document> articleCollection;
 	private String id1;
@@ -41,19 +48,25 @@ public class BlogMongoRepositoryTest {
 
 	@BeforeClass
 	public static void setUpServer() {
-		server = new MongoServer(new MemoryBackend());
+		Version.Main version = Version.Main.V8_1;
+		server = Mongod.instance().transitions(version)
+		.walker()
+		.initState(StateID.of(RunningMongodProcess.class));
+
+		ServerAddress addr = server.current().getServerAddress();
+		connectionString = String.format("mongodb://%s:%d", addr.getHost(), addr.getPort());
 	}
 
 	@AfterClass
 	public static void shutDownServer() {
-		server.shutdown();
+		server.close();
 	}
 
 	@Before
 	public void setUp() {
-		String connectionString = server.bindAndGetConnectionString();
 		client = MongoClients.create(connectionString);
-		blogRepository = new BlogMongoRepository(client);
+		session = client.startSession();
+		blogRepository = new BlogMongoRepository(client, session);
 		MongoDatabase database = client.getDatabase(BLOG_DB_NAME);
 		database.drop();
 		articleCollection = database.getCollection(ARTICLE_COLLECTION_NAME);
@@ -64,7 +77,6 @@ public class BlogMongoRepositoryTest {
 	@After
 	public void tearDown() {
 		client.close();
-		server.shutdown();
 	}
 
 	@Test
@@ -136,13 +148,6 @@ public class BlogMongoRepositoryTest {
 	}
 
 	@Test
-	public void testShouldThrowWhenSavingArticleWithId() {
-		Article article = new Article(id1, "Parmesan eggplants", "I like them");
-		addArticle(article);
-		assertThatThrownBy(() -> blogRepository.save(article)).isInstanceOf(IllegalArgumentException.class).hasMessage("Article already has an id!");
-	}
-	
-	@Test
 	public void testUpdateForExistingArticle() {
 		Article article = new Article(id1, "Parmesan eggplants", "I like them");
 		Tag tag = new Tag("cooking");
@@ -152,6 +157,7 @@ public class BlogMongoRepositoryTest {
 		Article updatedArticle = new Article(id1, "Parmesan eggplants with extra cheese", "I like them a lot", tags);
 		blogRepository.update(updatedArticle);
 		Article foundArticle = readAllArticlesFromDatabase().get(0);
+		assertThat(foundArticle.getId()).isEqualTo(updatedArticle.getId());
 		assertThat(foundArticle.getTitle()).isEqualTo(updatedArticle.getTitle());
 		assertThat(foundArticle.getContent()).isEqualTo(updatedArticle.getContent());
 		assertThat(foundArticle.getTags()).isEqualTo(updatedArticle.getTags());

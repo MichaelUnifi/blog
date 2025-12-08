@@ -45,11 +45,11 @@ public class BlogSwingView extends JFrame implements BlogView{
 	private JButton btnDeleteArticle;
 	private JTextField txtFilter;
 	private JLabel lblContent;
-	private JList listArticles;
+	private JList<Article> listArticles;
 	private DefaultListModel<Article> listArticlesModel;
 	private JLabel lblTags;
 	private JTextField txtContent;
-	private JList listTags;
+	private JList<Tag> listTags;
 	private DefaultListModel<Tag> listTagsModel;
 	private JTextField txtTag;
 	private JButton btnTag;

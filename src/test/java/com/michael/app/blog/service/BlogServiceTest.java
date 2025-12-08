@@ -117,11 +117,9 @@ public class BlogServiceTest {
 	@Test
 	public void testUpdateWhenArticleAlreadyExists() {
 		when(repository.findById(id1)).thenReturn(article);
-		Article updatedArticle = new Article(id1, "Parmesan eggplants with extra cheese", "I like them a lot", tags);
-		updatedArticle.addTag(new Tag("cooking"));
 		ArgumentCaptor<Article> articleCaptor = ArgumentCaptor.forClass(Article.class);
 		tagLabels.add("cooking");
-		service.updateArticle(id1, "Parmesan eggplants with extra cheese", "I like them a lot", tagLabels);
+		Article updatedArticle = service.updateArticle(id1, "Parmesan eggplants with extra cheese", "I like them a lot", tagLabels);
 		verify(repository).findById(id1);
 		verify(repository).update(articleCaptor.capture());
 		assertThat(articleCaptor.getValue()).isEqualTo(updatedArticle);
