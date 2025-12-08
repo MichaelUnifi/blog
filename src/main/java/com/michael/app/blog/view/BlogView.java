@@ -7,16 +7,19 @@ import com.michael.app.blog.model.Tag;
 
 public interface BlogView {
 
-	void showAllArticles(List<Article> all);
+	void showAllArticles(List<Article> articles);
+	
+	void showAllArticlesWithTag(List<Article> articles);
 
 	void articleAdded(Article article);
 
-	void showError(String string, Article foundArticle);
+	void showError(String errorMessage);
 
-	void articleDeleted(Article article);
+	void articleUpdated(Article updatedArticle);
 
-	void addedTag(Article article, Tag tag);
+	void articleDeleted();
 
-	void removedTag(Article article, Tag tag);
+	void addedTag(Tag tag);
 
+	void removedTag();
 }

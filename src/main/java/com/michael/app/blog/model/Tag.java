@@ -7,8 +7,8 @@ public class Tag {
 	private String label;
 
 	public Tag(String label) {
-		if(label == null) throw new IllegalArgumentException("Tag label cannot be null!");
-		if(label.equals("")) throw new IllegalArgumentException("Tag label cannot be an empty string!");
+		if(label.trim() == null) throw new IllegalArgumentException("Tag label cannot be null!");
+		if(label.trim().equals("")) throw new IllegalArgumentException("Tag label cannot be blank!");
 		label = label.toLowerCase();
 		this.label = label;
 	}

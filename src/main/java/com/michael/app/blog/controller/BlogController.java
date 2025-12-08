@@ -1,75 +1,62 @@
 package com.michael.app.blog.controller;
 
+import java.util.Set;
+
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
-import com.michael.app.blog.repository.BlogRepository;
+import com.michael.app.blog.service.BlogService;
 import com.michael.app.blog.view.BlogView;
 
 public class BlogController {
-	private BlogRepository repository;
+	private BlogService service;
 	private BlogView view;
 	
-	public BlogController(BlogRepository repository, BlogView view) {
-		this.repository = repository;
+	public BlogController(BlogService service, BlogView view) {
+		this.service = service;
 		this.view = view;
 	}
 	
 	public void allArticles() {
-		view.showAllArticles(repository.findAll());
+		view.showAllArticles(service.getAllArticles());
 	}
 	
-	public void allArticlesWithTag(Tag tag) {
-		view.showAllArticles(repository.findAllWithTag(tag));
+	public void allArticlesWithTag(String tagLabel) {
+		view.showAllArticles(service.getArticlesByTag(tagLabel));
 	}
 	
-	public void addArticle(Article article) {
-		Article foundArticle = repository.findById(article.getId());
-		if(foundArticle == null) {
-			repository.save(article);
-			view.articleAdded(article);
-		} else {
-			view.showError("An article with title " + article.getTitle() + " is already present!", foundArticle);
+	public void saveArticle(String title, String content, Set<String> tagLabels) {
+		try {
+			Article savedArticle = service.saveArticle(title, content, tagLabels);
+			view.articleAdded(savedArticle);
+		} catch(Exception e) {
+			view.showError("Error in article save - " + e.getMessage());
 		}
 	}
 	
-	public void deleteArticle(Article article) {
-		Article foundArticle = repository.findById(article.getId());
-		if(foundArticle == null) {
-			view.showError("No article with title " + article.getTitle(), article);
-		} else {
-			repository.delete(article.getId());
-			view.articleDeleted(article);
+	public void updateArticle(String id, String title, String content, Set<String> tagLabels) {
+		try {
+			Article updatedArticle = service.updateArticle(id, title, content, tagLabels);
+			view.articleUpdated(updatedArticle);
+		} catch(Exception e) {
+			view.showError("Error in article update - " + e.getMessage());
 		}
 	}
-
-	public void tag(Article article, Tag tag) {
-		Article foundArticle = repository.findById(article.getId());
-		if(foundArticle == null) {
-			view.showError("Unable to tag: article does not exist", article);
-		} else if(foundArticle.getTags().contains(tag)) {
-			view.showError("Article already has tag " + tag.getLabel(), article);
-		} else {
-			article.addTag(tag);
-			repository.save(article);
-			view.addedTag(article, tag);
+	
+	public void deleteArticle(String id) {
+		try {
+			service.deleteArticle(id);
+			view.articleDeleted();
+		} catch(Exception e) {
+			view.showError("Error in article delete - " + e.getMessage());
 		}
 	}
 
-	public void untag(Article article, Tag tag) {
-		Article foundArticle = repository.findById(article.getId());
-		
-		if(foundArticle == null) {
-			view.showError("Unable to untag: article does not exist", article);
-			
-		} else if(foundArticle.getTags().contains(tag)){
-			article.removeTag(tag);
-			repository.save(foundArticle);
-			view.removedTag(foundArticle, tag);
-		} else {
-			view.showError("Article is not tagged with " + tag.getLabel(), article);
+	public void tag(String tagLabel) {
+		try {
+			Tag tag = new Tag(tagLabel);
+			view.addedTag(tag);	
+		} catch(Exception e) {
+			view.showError(e.getMessage());
 		}
-		
 	}
-
-	
 }

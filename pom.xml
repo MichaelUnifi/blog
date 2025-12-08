@@ -20,7 +20,7 @@
     <logback-classic-version>1.5.21</logback-classic-version>
     <mongodb-driver-sync-version>5.6.1</mongodb-driver-sync-version>
     <mockito-core-version>5.20.0</mockito-core-version>
-    <assertj-core-version>3.27.6</assertj-core-version>
+    <assertj-swing-version>3.17.1</assertj-swing-version>
     <junit-version>4.13.2</junit-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
@@ -43,6 +43,8 @@
             <excludes>
               <exclude>**/model/**</exclude>
               <exclude>**/*Test*</exclude>
+              <exclude>**/mongo/*Factory*</exclude>
+              <exclude>**/view/**</exclude>
             </excludes>
           </configuration>
           <executions>
@@ -162,36 +164,29 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin-version}</version>
+          <configuration>
+            <systemPropertyVariables>
+              <mongo.host>localhost</mongo.host>
+              <mongo.port>${mongo.mapped.port}</mongo.port>
+            </systemPropertyVariables>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven-failsafe-plugin-version}</version>
-        <configuration>
-          <systemPropertyVariables>
-            <mongo.host>localhost</mongo.host>
-            <mongo.port>${mongo.mapped.port}</mongo.port>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      
     </plugins>
   </build>
 
@@ -343,8 +338,8 @@
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj-core-version}</version>
+      <artifactId>assertj-swing-junit</artifactId>
+      <version>${assertj-swing-version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -374,6 +369,11 @@
       <artifactId>mongo-java-server</artifactId>
       <version>${mongo-java-server-version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>7.0.0</version>
     </dependency>
   </dependencies>
 </project>

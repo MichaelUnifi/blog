@@ -9,14 +9,14 @@ import org.junit.Test;
 
 public class ArticleTest {
 	
-	private int id;
+	private String id;
 	private String title;
 	private String content;
 	private String tagLabel;
 	
 	@Before
 	public void setUp() {
-		id = 1;
+		id = "1";
 		title = "Parmesan eggplants";
 		content = "I like them";
 		tagLabel = "cooking";

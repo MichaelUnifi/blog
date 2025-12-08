@@ -6,12 +6,12 @@ import java.util.Set;
 
 
 public class Article {
-	private int id;
+	private String id;
 	private String title;
 	private String content;
 	private Set<Tag> tags;
 	
-	public Article(int id, String title, String content, Set<Tag> tags) {
+	public Article(String id, String title, String content, Set<Tag> tags) {
 		super();
 		this.id = id;
 		if(title == null) throw new IllegalArgumentException("Article title cannot be null!");
@@ -23,11 +23,11 @@ public class Article {
 		this.tags = tags;
 	}
 	
-	public Article(int id, String title, String content) {
+	public Article(String id, String title, String content) {
 		this(id, title, content, new HashSet<>());
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -74,7 +74,11 @@ public class Article {
 		if (getClass() != obj.getClass())
 			return false;
 		Article other = (Article) obj;
-		return Objects.equals(content, other.content) && id == other.id && Objects.equals(tags, other.tags)
+		return Objects.equals(content, other.content) && id.equals(other.id) && Objects.equals(tags, other.tags)
 				&& Objects.equals(title, other.title);
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

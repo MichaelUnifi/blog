@@ -10,10 +10,12 @@ public interface BlogRepository {
 	List<Article> findAll();
 
 	List<Article> findAllWithTag(Tag tag);
-	
-	Article findById(int id);
 
-	void save(Article article);
+	Article findById(String id);
 
-	void delete(int id);
+	Article save(Article article);
+
+	void update(Article article);
+
+	void delete(String id);
 }
