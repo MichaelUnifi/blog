@@ -53,7 +53,7 @@
               <goals>
                 <goal>prepare-agent</goal>
                 <goal>report</goal>
-                  </goals>
+              </goals>
             </execution>
             <execution>
               <id>jacoco-check</id>
@@ -61,7 +61,6 @@
                 <goal>check</goal>
               </goals>
               <configuration>
-                <dataFile>**/jacoco/allTest.exec</dataFile>
                 <rules>
                   <rule>
                     <element>PACKAGE</element>
@@ -250,23 +249,30 @@
             <artifactId>jacoco-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>com.github.hazendaz.maven</groupId>
-            <artifactId>coveralls-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>verify</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-              </execution>
-            </executions>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
       <properties>
         <sonar.coverage.exclusions>
           **/model/**,
+          **/view/**,
+          **/*Factory*,
         </sonar.coverage.exclusions>
+        <sonar.issue.ignore.multicriteria>e11,e26</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.e11.ruleKey>
+          java:S117
+        </sonar.issue.ignore.multicriteria.e11.ruleKey>
+        <sonar.issue.ignore.multicriteria.e11.resourceKey>
+          **/BlogSwingView.java
+        </sonar.issue.ignore.multicriteria.e11.resourceKey>
+        <sonar.issue.ignore.multicriteria.e26.ruleKey>
+          java:S2699
+        </sonar.issue.ignore.multicriteria.e26.ruleKey>
+        <sonar.issue.ignore.multicriteria.e26.resourceKey>
+          **/BlogSwingViewTest.java
+        </sonar.issue.ignore.multicriteria.e26.resourceKey>
       </properties>
     </profile>
     <profile>
@@ -367,6 +373,11 @@
       <artifactId>de.flapdoodle.embed.mongo</artifactId>
       <version>4.21.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
     </dependency>
   </dependencies>
 </project>

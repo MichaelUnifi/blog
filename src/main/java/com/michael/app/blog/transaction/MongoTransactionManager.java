@@ -16,7 +16,7 @@ public class MongoTransactionManager implements TransactionManager {
 	}
 
 	@Override
-	public <T> T doInTransaction(TransactionCode<T> code) throws RuntimeException{
+	public <T> T doInTransaction(TransactionCode<T> code) throws TransactionException{
 		try (ClientSession session = client.startSession()) {
 			session.startTransaction();
 			try {
@@ -26,7 +26,7 @@ public class MongoTransactionManager implements TransactionManager {
 				return result;
 			} catch (Exception e) {
 				session.abortTransaction();
-				throw new RuntimeException("Transaction failed: " + e.getMessage(), e);
+				throw new TransactionException("Transaction failed: " + e.getMessage(), e);
 			}
 		}
 	}

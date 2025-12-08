@@ -23,7 +23,7 @@ import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.transaction.TransactionCode;
 import com.michael.app.blog.transaction.TransactionManager;
 
-public class BlogServiceTest {
+public class BlogMongoServiceTest {
 
 	@Mock
 	private TransactionManager transactionManager;
@@ -50,7 +50,7 @@ public class BlogServiceTest {
 			TransactionCode<?> code = answer.getArgument(0);
 			return code.apply(repository);
 		});
-		service = new BlogServiceImpl(transactionManager);
+		service = new BlogMongoService(transactionManager);
 		id1 = "000000000000000000000000";
 		id2 = "000000000000000000000001";
 		tagLabels = new HashSet<String>();
@@ -129,7 +129,7 @@ public class BlogServiceTest {
 	public void testShouldThrowExceptionWhenUpdatedArticleDoesNotExist() {
 		when(repository.findById(id1)).thenReturn(null);
 		assertThatThrownBy(() -> service.updateArticle(id1, "Parmesan eggplants", "I like them", tagLabels))
-			.isInstanceOf(RuntimeException.class).hasMessage("Article does not exist!");
+			.isInstanceOf(ArticleNotFoundException.class).hasMessage("Article not found with ID: " + id1);
 	}
 	
 	@Test
@@ -163,6 +163,8 @@ public class BlogServiceTest {
 	@Test
 	public void testShouldThrowExceptionWhenDeletingNonExistingArticle() {
 		when(repository.findById(id1)).thenReturn(null);
-		assertThatThrownBy(() -> service.deleteArticle(id1)).isInstanceOf(RuntimeException.class).hasMessage("Article does not exist!");
+		assertThatThrownBy(() -> service.deleteArticle(id1))
+			.isInstanceOf(ArticleNotFoundException.class)
+			.hasMessage("Article not found with ID: " + id1);
 	}
 }

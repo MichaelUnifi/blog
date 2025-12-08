@@ -9,8 +9,6 @@ public interface BlogView {
 
 	void showAllArticles(List<Article> articles);
 	
-	void showAllArticlesWithTag(List<Article> articles);
-
 	void articleAdded(Article article);
 
 	void showError(String errorMessage);

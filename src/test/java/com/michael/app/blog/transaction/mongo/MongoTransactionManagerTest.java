@@ -2,16 +2,10 @@ package com.michael.app.blog.transaction.mongo;
 
 import static org.mockito.Mockito.*;
 import org.mockito.InOrder;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.InOrder;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,6 +15,7 @@ import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
 import com.michael.app.blog.transaction.MongoTransactionManager;
 import com.michael.app.blog.transaction.TransactionCode;
+import com.michael.app.blog.transaction.TransactionException;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 
@@ -74,8 +69,10 @@ public class MongoTransactionManagerTest {
 	public void testTransactionAbortsOnException() {
 		@SuppressWarnings("unchecked")
 		TransactionCode<String> code = mock(TransactionCode.class);
-		when(code.apply(repository)).thenThrow(new RuntimeException("Database error"));
-		assertThatThrownBy(() -> manager.doInTransaction(code)).isInstanceOf(RuntimeException.class).hasMessage("Transaction failed: Database error");
+		when(code.apply(repository)).thenThrow(new TransactionException("Database error", null));
+		assertThatThrownBy(() -> manager.doInTransaction(code))
+			.isInstanceOf(TransactionException.class)
+			.hasMessage("Transaction failed: Database error");
 		verify(clientSession).startTransaction();
 		verify(clientSession).abortTransaction();
 		verify(clientSession).close();

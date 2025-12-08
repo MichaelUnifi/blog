@@ -183,18 +183,6 @@ public class BlogSwingViewTest  extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
-	public void testShowAllArticlesWithTagAddsArticlesDescriptionsToTheList() {
-		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(
-				new Article("000000000000000000000002", "Steak", "My favourite")
-			));
-		GuiActionRunner.execute(() ->
-			blogView.showAllArticlesWithTag(Arrays.asList(article1, article2))
-		);
-		String[] listContents = window.list("articleList").contents();
-		assertThat(listContents).containsExactly(article1.toString(), article2.toString());
-	}
-	
-	@Test
 	public void testShowErrorShouldShowTheMessageInTheErrorLabel() {
 		GuiActionRunner.execute(
 			() -> blogView.showError("error message")

@@ -1,6 +1,5 @@
 package com.michael.app.blog.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,11 +9,11 @@ import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.transaction.TransactionManager;
 
-public class BlogServiceImpl implements BlogService {
+public class BlogMongoService implements BlogService {
 
 	private TransactionManager transactionManager;
 
-	public BlogServiceImpl(TransactionManager transactionManager) {
+	public BlogMongoService(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -60,7 +59,7 @@ public class BlogServiceImpl implements BlogService {
 	
 	private void validateId(String id, BlogRepository repository) {
 		if(repository.findById(id) == null)
-			throw new RuntimeException("Article does not exist!");
+			throw new ArticleNotFoundException(id);
 	}
 	
 	private Set<Tag> toTagSet(Set<String> tagLabels) throws IllegalArgumentException {

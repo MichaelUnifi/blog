@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import org.apache.log4j.Logger;
 
 import com.michael.app.blog.controller.BlogController;
 import com.michael.app.blog.model.Article;
@@ -12,16 +13,16 @@ import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.view.BlogView;
 
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+
+
 import java.awt.Insets;
-import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JList;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -30,12 +31,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.DefaultListModel;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 public class BlogSwingView extends JFrame implements BlogView{
 	
-	private BlogController blogController;
+	private static final Logger logger = Logger.getLogger(BlogSwingView.class);
+	
+	private transient BlogController blogController;
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -73,20 +74,18 @@ public class BlogSwingView extends JFrame implements BlogView{
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					BlogSwingView frame = new BlogSwingView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				BlogSwingView frame = new BlogSwingView();
+				frame.setVisible(true);
+			} catch (Exception e) {
+				logger.error("error: ", e);
 			}
 		});
 	}
 
 	public BlogSwingView() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -130,11 +129,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		btnFilter = new JButton("Filter");
 		btnFilter.setEnabled(false);
-		btnFilter.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				blogController.allArticlesWithTag(txtFilter.getText());
-			}
-		});
+		btnFilter.addActionListener(arg0 -> blogController.allArticlesWithTag(txtFilter.getText()));
 		GridBagConstraints gbc_btnFilter = new GridBagConstraints();
 		gbc_btnFilter.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnFilter.gridwidth = 2;
@@ -147,11 +142,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		gbc_btnReset.insets = new Insets(0, 0, 5, 5);
 		gbc_btnReset.gridx = 14;
 		gbc_btnReset.gridy = 1;
-		btnReset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				blogController.allArticles();
-			}
-		});
+		btnReset.addActionListener(e -> blogController.allArticles());
 		contentPane.add(btnReset, gbc_btnReset);
 		
 		lblContent = new JLabel("Content");
@@ -199,22 +190,20 @@ public class BlogSwingView extends JFrame implements BlogView{
 		btnSaveArticle = new JButton("Save");
 		btnSaveArticle.setEnabled(false);
 		btnSaveArticle.setName("saveArticle");
-		btnSaveArticle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Set<String> tagLabels = IntStream.range(0, listTagsModel.size())
-					.mapToObj(listTagsModel::getElementAt)
-					.map(Tag::getLabel)
-					.collect(Collectors.toSet()
-				);
-				if(listArticles.getSelectedIndex() != -1)
-					blogController.updateArticle(
-						listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId(),
-						txtTitle.getText(),
-						txtContent.getText(),
-						tagLabels);
-				else
-					blogController.saveArticle(txtTitle.getText(), txtContent.getText(), tagLabels);
-			}
+		btnSaveArticle.addActionListener(e -> {
+			Set<String> tagLabels = IntStream.range(0, listTagsModel.size())
+				.mapToObj(listTagsModel::getElementAt)
+				.map(Tag::getLabel)
+				.collect(Collectors.toSet()
+			);
+			if(listArticles.getSelectedIndex() != -1)
+				blogController.updateArticle(
+					listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId(),
+					txtTitle.getText(),
+					txtContent.getText(),
+					tagLabels);
+			else
+				blogController.saveArticle(txtTitle.getText(), txtContent.getText(), tagLabels);
 		});
 		GridBagConstraints gbc_btnSaveArticle = new GridBagConstraints();
 		gbc_btnSaveArticle.gridwidth = 4;
@@ -226,13 +215,9 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		btnDeleteArticle = new JButton("Delete");
 		btnDeleteArticle.setEnabled(false);
-		btnDeleteArticle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				blogController.deleteArticle(
-					listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId()
-				);
-			}
-		});
+		btnDeleteArticle.addActionListener(e -> blogController.deleteArticle(
+			listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId()
+		));
 		GridBagConstraints gbc_btnDeleteArticle = new GridBagConstraints();
 		gbc_btnDeleteArticle.gridwidth = 2;
 		gbc_btnDeleteArticle.fill = GridBagConstraints.HORIZONTAL;
@@ -243,22 +228,20 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		listArticlesModel = new DefaultListModel<>();
 		listArticles = new JList<>(listArticlesModel);
-		listArticles.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent arg0) {
-				listTagsModel.removeAllElements();
-				int selectedIndex = listArticles.getSelectedIndex();
-				if(selectedIndex != -1) {
-					btnDeleteArticle.setEnabled(true);
-					Article selectedArticle = (Article) listArticles.getModel().getElementAt(listArticles.getSelectedIndex());
-					txtTitle.setText(selectedArticle.getTitle());
-					txtContent.setText(selectedArticle.getContent());
-					selectedArticle.getTags().stream().forEach(listTagsModel::addElement);
-				}
-				else {
-					btnDeleteArticle.setEnabled(false);
-					txtTitle.setText("");
-					txtContent.setText("");
-				}
+		listArticles.addListSelectionListener(arg0 -> {
+			listTagsModel.removeAllElements();
+			int selectedIndex = listArticles.getSelectedIndex();
+			if(selectedIndex != -1) {
+				btnDeleteArticle.setEnabled(true);
+				Article selectedArticle = listArticles.getModel().getElementAt(listArticles.getSelectedIndex());
+				txtTitle.setText(selectedArticle.getTitle());
+				txtContent.setText(selectedArticle.getContent());
+				selectedArticle.getTags().stream().forEach(listTagsModel::addElement);
+			}
+			else {
+				btnDeleteArticle.setEnabled(false);
+				txtTitle.setText("");
+				txtContent.setText("");
 			}
 		});
 		listArticles.setName("articleList");
@@ -289,11 +272,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		listTagsModel = new DefaultListModel<>();
 		listTags = new JList<>(listTagsModel);
-		listTags.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent arg0) {
-				btnUnTag.setEnabled(listTags.getSelectedIndex() != -1);
-			}
-		});
+		listTags.addListSelectionListener(arg0 -> btnUnTag.setEnabled(listTags.getSelectedIndex() != -1));
 		listTags.setName("tagList");
 		GridBagConstraints gbc_tagList = new GridBagConstraints();
 		gbc_tagList.gridheight = 5;
@@ -323,11 +302,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		txtTag.setColumns(10);
 		
 		btnTag = new JButton("Add");
-		btnTag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				blogController.tag(txtTag.getText());
-			}
-		});
+		btnTag.addActionListener(arg0 -> blogController.tag(txtTag.getText()));
 		btnTag.setEnabled(false);
 		GridBagConstraints gbc_btnTag = new GridBagConstraints();
 		gbc_btnTag.fill = GridBagConstraints.HORIZONTAL;
@@ -339,11 +314,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		btnUnTag = new JButton("Remove");
 		btnUnTag.setEnabled(false);
-		btnUnTag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				removedTag();
-			}
-		});
+		btnUnTag.addActionListener(e -> removedTag());
 		GridBagConstraints gbc_btnUnTag = new GridBagConstraints();
 		gbc_btnUnTag.gridwidth = 2;
 		gbc_btnUnTag.insets = new Insets(0, 0, 5, 5);
@@ -365,12 +336,6 @@ public class BlogSwingView extends JFrame implements BlogView{
 
 	@Override
 	public void showAllArticles(List<Article> articles) {
-		listArticlesModel.clear();
-		articles.stream().forEach(listArticlesModel::addElement);
-	}
-
-	@Override
-	public void showAllArticlesWithTag(List<Article> articles) {
 		listArticlesModel.clear();
 		articles.stream().forEach(listArticlesModel::addElement);
 	}
