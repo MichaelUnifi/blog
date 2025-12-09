@@ -12,7 +12,9 @@ import java.util.stream.StreamSupport;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.michael.app.blog.model.Article;
@@ -23,6 +25,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import org.testcontainers.mongodb.MongoDBContainer;
+
 public class BlogMongoRepositoryIT {
 
 	private MongoClient client;
@@ -31,11 +35,22 @@ public class BlogMongoRepositoryIT {
 	private MongoCollection<Document> articleCollection;
 	private String id1;
 	private String id2;
-	private static int mongoPort = Integer.parseInt(System.getProperty("mongo.port", "27017"));
+	private static MongoDBContainer mongoContainer;
+	
+	@BeforeClass
+	public static void setUpContainer() {
+		mongoContainer = new MongoDBContainer("mongo:5");
+		mongoContainer.start();
+	}
+
+	@AfterClass
+	public static void tearDownContainer() {
+		mongoContainer.stop();
+	}
 
 	@Before
 	public void setUp() {
-		client = MongoClients.create("mongodb://localhost:" + mongoPort);
+		client = MongoClients.create(mongoContainer.getConnectionString());
 		session = client.startSession();
 		blogRepository = new BlogMongoRepository(client, session);
 		MongoDatabase database = client.getDatabase(BLOG_DB_NAME);

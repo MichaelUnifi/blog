@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
@@ -13,6 +14,7 @@ public class BlogMongoService implements BlogService {
 
 	private TransactionManager transactionManager;
 
+	@Inject
 	public BlogMongoService(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}

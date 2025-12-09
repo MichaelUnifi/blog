@@ -1,5 +1,6 @@
 package com.michael.app.blog.transaction;
 
+import com.google.inject.Inject;
 import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
 import com.mongodb.client.ClientSession;
@@ -9,7 +10,8 @@ public class MongoTransactionManager implements TransactionManager {
 
 	private MongoClient client;
 	private BlogRepositoryFactory repositoryFactory;
-
+	
+	@Inject
 	public MongoTransactionManager(MongoClient client, BlogRepositoryFactory repositoryFactory) {
 		this.client = client;
 		this.repositoryFactory = repositoryFactory;

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.google.inject.Inject;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
@@ -24,6 +25,7 @@ public class BlogMongoRepository implements BlogRepository {
 	private MongoCollection<Document> articleCollection;
 	private ClientSession session = null;
 	
+	@Inject
 	public BlogMongoRepository(MongoClient client, ClientSession session) {
 		this.session = session;
 		this.articleCollection = client.getDatabase(BLOG_DB_NAME).getCollection(ARTICLE_COLLECTION_NAME);
