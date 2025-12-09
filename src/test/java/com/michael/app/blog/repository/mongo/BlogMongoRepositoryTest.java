@@ -7,8 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
-import static com.michael.app.blog.repository.mongo.BlogMongoRepository.BLOG_DB_NAME;
-import static com.michael.app.blog.repository.mongo.BlogMongoRepository.ARTICLE_COLLECTION_NAME;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +35,7 @@ import de.flapdoodle.reverse.TransitionWalker;
 public class BlogMongoRepositoryTest {
 	
 	private static TransitionWalker.ReachedState<RunningMongodProcess> server;
-    private static String connectionString;
+	private static String connectionString;
 	
 	private static MongoClient client;
 	private static ClientSession session;
@@ -45,6 +43,8 @@ public class BlogMongoRepositoryTest {
 	private MongoCollection<Document> articleCollection;
 	private String id1;
 	private String id2;
+	private String blogDb = "blog";
+	private String articleCollectionName = "blog";
 
 	@BeforeClass
 	public static void setUpServer() {
@@ -66,10 +66,10 @@ public class BlogMongoRepositoryTest {
 	public void setUp() {
 		client = MongoClients.create(connectionString);
 		session = client.startSession();
-		blogRepository = new BlogMongoRepository(client, session);
-		MongoDatabase database = client.getDatabase(BLOG_DB_NAME);
+		blogRepository = new BlogMongoRepository(client, blogDb, articleCollectionName, session);
+		MongoDatabase database = client.getDatabase(blogDb);
 		database.drop();
-		articleCollection = database.getCollection(ARTICLE_COLLECTION_NAME);
+		articleCollection = database.getCollection(articleCollectionName);
 		id1 = "000000000000000000000000";
 		id2 = "000000000000000000000001";
 	}

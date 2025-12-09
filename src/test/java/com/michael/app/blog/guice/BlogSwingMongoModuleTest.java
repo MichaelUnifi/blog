@@ -15,7 +15,6 @@ import com.michael.app.blog.controller.BlogControllerFactory;
 import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
 import com.michael.app.blog.repository.mongo.BlogMongoRepository;
-import com.michael.app.blog.repository.mongo.BlogMongoRepositoryFactory;
 import com.michael.app.blog.service.BlogService;
 import com.michael.app.blog.service.mongo.BlogMongoService;
 import com.michael.app.blog.transaction.BlogMongoTransactionManager;
@@ -68,7 +67,7 @@ public class BlogSwingMongoModuleTest {
 		assertThat(injector.getInstance(TransactionManager.class))
 		.isInstanceOf(BlogMongoTransactionManager.class);
 		assertThat(injector.getInstance(BlogRepositoryFactory.class))
-			.isInstanceOf(BlogMongoRepositoryFactory.class);
+			.isInstanceOf(BlogRepositoryFactory.class);
 		assertThat(injector.getInstance(BlogService.class))
 		.isInstanceOf(BlogMongoService.class);
 		assertThat(injector.getInstance(BlogView.class))

@@ -5,8 +5,9 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.michael.app.blog.controller.BlogController;
 import com.michael.app.blog.controller.BlogControllerFactory;
+import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
-import com.michael.app.blog.repository.mongo.BlogMongoRepositoryFactory;
+import com.michael.app.blog.repository.mongo.BlogMongoRepository;
 import com.michael.app.blog.service.BlogService;
 import com.michael.app.blog.service.mongo.BlogMongoService;
 import com.michael.app.blog.transaction.BlogMongoTransactionManager;
@@ -30,13 +31,15 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 		bind(Integer.class).annotatedWith(MongoPort.class).toInstance(mongoPort);
 		bind(String.class).annotatedWith(MongoDbName.class).toInstance(databaseName);
 		bind(String.class).annotatedWith(MongoCollectionName.class).toInstance(collectionName);
-		bind(BlogRepositoryFactory.class).to(BlogMongoRepositoryFactory.class);
 		bind(TransactionManager.class).to(BlogMongoTransactionManager.class);
 		bind(BlogService.class).to(BlogMongoService.class);
 		bind(BlogView.class).to(BlogSwingView.class).in(Singleton.class);
 		install(new FactoryModuleBuilder()
 			.implement(BlogController.class, BlogController.class)
 			.build(BlogControllerFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(BlogRepository.class, BlogMongoRepository.class)
+			.build(BlogRepositoryFactory.class));
 	}
 	
 	public BlogSwingMongoDefaultModule mongoHost(String mongoHost) {

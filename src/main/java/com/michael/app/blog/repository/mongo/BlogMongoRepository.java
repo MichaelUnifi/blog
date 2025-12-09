@@ -7,6 +7,9 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.michael.app.blog.guice.MongoCollectionName;
+import com.michael.app.blog.guice.MongoDbName;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
@@ -20,15 +23,15 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class BlogMongoRepository implements BlogRepository {
-	public static final String BLOG_DB_NAME = "blog";
-	public static final String ARTICLE_COLLECTION_NAME = "blog";
+	
 	private MongoCollection<Document> articleCollection;
 	private ClientSession session = null;
 	
 	@Inject
-	public BlogMongoRepository(MongoClient client, ClientSession session) {
+	public BlogMongoRepository(MongoClient client,@MongoDbName String databaseName,
+		@MongoCollectionName String collectionName, @Assisted ClientSession session) {
 		this.session = session;
-		this.articleCollection = client.getDatabase(BLOG_DB_NAME).getCollection(ARTICLE_COLLECTION_NAME);
+		this.articleCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}
 
 	@Override

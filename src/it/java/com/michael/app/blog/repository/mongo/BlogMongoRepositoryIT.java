@@ -1,7 +1,6 @@
 package com.michael.app.blog.repository.mongo;
 
-import static com.michael.app.blog.repository.mongo.BlogMongoRepository.ARTICLE_COLLECTION_NAME;
-import static com.michael.app.blog.repository.mongo.BlogMongoRepository.BLOG_DB_NAME;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -17,6 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.Inject;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.mongodb.client.ClientSession;
@@ -31,11 +31,14 @@ public class BlogMongoRepositoryIT {
 
 	private MongoClient client;
 	private ClientSession session;
+	@Inject
 	private BlogMongoRepository blogRepository;
 	private MongoCollection<Document> articleCollection;
 	private String id1;
 	private String id2;
 	private static MongoDBContainer mongoContainer;
+	private String collectionName = "blog";
+	private String databaseName = "blog";
 	
 	@BeforeClass
 	public static void setUpContainer() {
@@ -52,10 +55,10 @@ public class BlogMongoRepositoryIT {
 	public void setUp() {
 		client = MongoClients.create(mongoContainer.getConnectionString());
 		session = client.startSession();
-		blogRepository = new BlogMongoRepository(client, session);
-		MongoDatabase database = client.getDatabase(BLOG_DB_NAME);
+		MongoDatabase database = client.getDatabase(databaseName);
+		blogRepository = new BlogMongoRepository(client, databaseName, collectionName, session);
 		database.drop();
-		articleCollection = database.getCollection(ARTICLE_COLLECTION_NAME);
+		articleCollection = database.getCollection(collectionName);
 		id1 = "000000000000000000000000";
 		id2 = "000000000000000000000001";
 	}
