@@ -140,6 +140,16 @@ public class BlogSwingViewTest  extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test @GUITest
+	public void testAddButtonShouldBeDisabledWhenTagTextIsEmptyorBlank() {
+		window.textBox("TagTextBox").enterText("test");
+		window.textBox("TagTextBox").deleteText();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.textBox("TagTextBox").enterText(" ");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+
+	}
+	
+	@Test @GUITest
 	public void testRemoveButtonShouldBeEnabledWhenATagIsSelected() {
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
 		window.list("tagList").selectItem(0);

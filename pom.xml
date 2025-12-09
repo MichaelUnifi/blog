@@ -43,7 +43,7 @@
             <excludes>
               <exclude>**/model/**</exclude>
               <exclude>**/*Test*</exclude>
-              <exclude>**/*View*</exclude>
+              <exclude>**/*App*</exclude>
             </excludes>
           </configuration>
           <executions>
@@ -86,8 +86,8 @@
           <version>${pitest.version}</version>
           <configuration>
             <targetClasses>
-              <param>*.controller.*</param>
-              <param>*.service.*Impl</param>
+              <param>*.controller.*Controller</param>
+              <param>*.service.mongo.*</param>
               <param>*.repository.mongo.*Repository</param>
             </targetClasses>
             <targetTests>
@@ -157,14 +157,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -244,8 +236,8 @@
       <properties>
         <sonar.coverage.exclusions>
           **/model/**,
-          **/view/**,
           **/*Factory*,
+          **/*App*,
         </sonar.coverage.exclusions>
         <sonar.issue.ignore.multicriteria>e11,e26</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.e11.ruleKey>
@@ -293,6 +285,22 @@
           **/model/**,
         </sonar.coverage.exclusions>
       </properties>
+    </profile>
+    
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

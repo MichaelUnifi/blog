@@ -24,7 +24,7 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
         restore-keys: ${{ runner.os }}-m2-
     - name: Build with Maven
-      run: xvfb-run mvn verify -Pjacoco,coveralls,mutation-testing
+      run: xvfb-run mvn verify -Pdocker,jacoco,coveralls,mutation-testing
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

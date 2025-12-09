@@ -1,11 +1,8 @@
 package com.michael.app.blog.view.swing;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import org.apache.log4j.Logger;
 
 import com.michael.app.blog.controller.BlogController;
 import com.michael.app.blog.model.Article;
@@ -33,8 +30,6 @@ import java.util.stream.IntStream;
 import javax.swing.DefaultListModel;
 
 public class BlogSwingView extends JFrame implements BlogView{
-	
-	private static final Logger logger = Logger.getLogger(BlogSwingView.class);
 	
 	private transient BlogController blogController;
 
@@ -69,19 +64,6 @@ public class BlogSwingView extends JFrame implements BlogView{
 	
 	DefaultListModel<Tag> getListTagsModel() {
 		return listTagsModel;
-	}
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> {
-			try {
-				BlogSwingView frame = new BlogSwingView();
-				frame.setVisible(true);
-			} catch (Exception e) {
-				logger.error("error: ", e);
-			}
-		});
 	}
 
 	public BlogSwingView() {
@@ -174,8 +156,6 @@ public class BlogSwingView extends JFrame implements BlogView{
 				btnFilter.setEnabled(
 						!txtFilter.getText().trim().isEmpty()
 					);
-				if(txtFilter.getText().isEmpty())
-					blogController.allArticles();
 			}
 		});
 		GridBagConstraints gbc_txtFilter = new GridBagConstraints();
@@ -288,7 +268,6 @@ public class BlogSwingView extends JFrame implements BlogView{
 			@Override
 			public void keyReleased(KeyEvent e) {
 				btnTag.setEnabled(!txtTag.getText().trim().isEmpty());
-				btnUnTag.setEnabled(!txtTag.getText().trim().isEmpty());
 			}
 		});
 		txtTag.setName("TagTextBox");
