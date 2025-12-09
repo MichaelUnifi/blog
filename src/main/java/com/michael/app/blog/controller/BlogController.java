@@ -2,6 +2,8 @@ package com.michael.app.blog.controller;
 
 import java.util.Set;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.service.BlogService;
@@ -11,7 +13,8 @@ public class BlogController {
 	private BlogService service;
 	private BlogView view;
 	
-	public BlogController(BlogService service, BlogView view) {
+	@Inject
+	public BlogController(BlogService service, @Assisted BlogView view) {
 		this.service = service;
 		this.view = view;
 	}

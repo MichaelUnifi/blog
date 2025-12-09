@@ -3,17 +3,19 @@ package com.michael.app.blog.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.michael.app.blog.repository.BlogRepository;
+import com.michael.app.blog.controller.BlogController;
+import com.michael.app.blog.controller.BlogControllerFactory;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
-import com.michael.app.blog.repository.mongo.BlogMongoRepository;
 import com.michael.app.blog.repository.mongo.BlogMongoRepositoryFactory;
-import com.michael.app.blog.service.BlogMongoService;
 import com.michael.app.blog.service.BlogService;
-import com.michael.app.blog.transaction.MongoTransactionManager;
+import com.michael.app.blog.service.mongo.BlogMongoService;
+import com.michael.app.blog.transaction.BlogMongoTransactionManager;
 import com.michael.app.blog.transaction.TransactionManager;
-import com.mongodb.client.ClientSession;
+import com.michael.app.blog.view.BlogView;
+import com.michael.app.blog.view.swing.BlogSwingView;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	
@@ -29,8 +31,12 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 		bind(String.class).annotatedWith(MongoDbName.class).toInstance(databaseName);
 		bind(String.class).annotatedWith(MongoCollectionName.class).toInstance(collectionName);
 		bind(BlogRepositoryFactory.class).to(BlogMongoRepositoryFactory.class);
-		bind(TransactionManager.class).to(MongoTransactionManager.class);
+		bind(TransactionManager.class).to(BlogMongoTransactionManager.class);
 		bind(BlogService.class).to(BlogMongoService.class);
+		bind(BlogView.class).to(BlogSwingView.class).in(Singleton.class);
+		install(new FactoryModuleBuilder()
+			.implement(BlogController.class, BlogController.class)
+			.build(BlogControllerFactory.class));
 	}
 	
 	public BlogSwingMongoDefaultModule mongoHost(String mongoHost) {
@@ -57,5 +63,12 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	@Singleton
 	MongoClient mongoClient(@MongoHost String host, @MongoPort int port) {
 		return MongoClients.create(host + ":" + port);
+	}
+	
+	@Provides
+	BlogSwingView studentView(BlogControllerFactory blogControllerFactory) {
+		BlogSwingView view = new BlogSwingView();
+		view.setBlogController(blogControllerFactory.create(view));
+		return view;
 	}
 }

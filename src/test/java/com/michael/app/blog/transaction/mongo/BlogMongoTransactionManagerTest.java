@@ -13,13 +13,13 @@ import org.junit.Test;
 
 import com.michael.app.blog.repository.BlogRepository;
 import com.michael.app.blog.repository.BlogRepositoryFactory;
-import com.michael.app.blog.transaction.MongoTransactionManager;
+import com.michael.app.blog.transaction.BlogMongoTransactionManager;
 import com.michael.app.blog.transaction.TransactionCode;
 import com.michael.app.blog.transaction.TransactionException;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 
-public class MongoTransactionManagerTest {
+public class BlogMongoTransactionManagerTest {
 
 	@Mock
 	private MongoClient client;
@@ -33,7 +33,7 @@ public class MongoTransactionManagerTest {
 	@Mock
 	private BlogRepositoryFactory factory;
 
-	private MongoTransactionManager manager;
+	private BlogMongoTransactionManager manager;
 
 	private AutoCloseable closeable;
 
@@ -42,7 +42,7 @@ public class MongoTransactionManagerTest {
 		closeable = MockitoAnnotations.openMocks(this);
 		when(client.startSession()).thenReturn(clientSession);
 		when(factory.createRepository(clientSession)).thenReturn(repository);
-		manager = new MongoTransactionManager(client, factory);
+		manager = new BlogMongoTransactionManager(client, factory);
 	}
 	
 	@After

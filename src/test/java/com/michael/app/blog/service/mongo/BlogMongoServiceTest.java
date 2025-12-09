@@ -1,4 +1,4 @@
-package com.michael.app.blog.service;
+package com.michael.app.blog.service.mongo;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -20,6 +20,8 @@ import org.mockito.MockitoAnnotations;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
+import com.michael.app.blog.service.ArticleNotFoundException;
+import com.michael.app.blog.service.BlogService;
 import com.michael.app.blog.transaction.TransactionCode;
 import com.michael.app.blog.transaction.TransactionManager;
 

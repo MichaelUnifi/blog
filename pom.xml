@@ -43,7 +43,6 @@
             <excludes>
               <exclude>**/model/**</exclude>
               <exclude>**/*Test*</exclude>
-              <exclude>**/*Factory*</exclude>
               <exclude>**/*View*</exclude>
             </excludes>
           </configuration>
@@ -335,6 +334,11 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
+      <version>7.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
       <version>7.0.0</version>
     </dependency>
     <dependency>

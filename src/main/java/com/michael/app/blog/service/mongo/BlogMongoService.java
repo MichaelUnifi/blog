@@ -1,4 +1,4 @@
-package com.michael.app.blog.service;
+package com.michael.app.blog.service.mongo;
 
 import java.util.List;
 import java.util.Set;
@@ -8,6 +8,8 @@ import com.google.inject.Inject;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.repository.BlogRepository;
+import com.michael.app.blog.service.ArticleNotFoundException;
+import com.michael.app.blog.service.BlogService;
 import com.michael.app.blog.transaction.TransactionManager;
 
 public class BlogMongoService implements BlogService {

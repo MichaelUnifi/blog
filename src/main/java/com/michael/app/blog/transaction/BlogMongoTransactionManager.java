@@ -6,13 +6,13 @@ import com.michael.app.blog.repository.BlogRepositoryFactory;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 
-public class MongoTransactionManager implements TransactionManager {
+public class BlogMongoTransactionManager implements TransactionManager {
 
 	private MongoClient client;
 	private BlogRepositoryFactory repositoryFactory;
 	
 	@Inject
-	public MongoTransactionManager(MongoClient client, BlogRepositoryFactory repositoryFactory) {
+	public BlogMongoTransactionManager(MongoClient client, BlogRepositoryFactory repositoryFactory) {
 		this.client = client;
 		this.repositoryFactory = repositoryFactory;
 	}
