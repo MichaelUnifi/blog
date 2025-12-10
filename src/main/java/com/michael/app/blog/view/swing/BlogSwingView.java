@@ -58,6 +58,10 @@ public class BlogSwingView extends JFrame implements BlogView{
 		this.blogController = blogController;
 		}
 	
+	public BlogController getBlogController() {
+		return blogController;
+	}
+	
 	DefaultListModel<Article> getListArticlesModel() {
 		return listArticlesModel;
 	}

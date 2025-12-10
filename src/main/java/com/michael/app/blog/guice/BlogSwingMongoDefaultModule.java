@@ -31,9 +31,9 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 		bind(Integer.class).annotatedWith(MongoPort.class).toInstance(mongoPort);
 		bind(String.class).annotatedWith(MongoDbName.class).toInstance(databaseName);
 		bind(String.class).annotatedWith(MongoCollectionName.class).toInstance(collectionName);
-		bind(TransactionManager.class).to(BlogMongoTransactionManager.class);
-		bind(BlogService.class).to(BlogMongoService.class);
-		bind(BlogView.class).to(BlogSwingView.class).in(Singleton.class);
+		bind(TransactionManager.class).to(BlogMongoTransactionManager.class).in(Singleton.class);
+		bind(BlogService.class).to(BlogMongoService.class).in(Singleton.class);
+		bind(BlogView.class).to(BlogSwingView.class);
 		install(new FactoryModuleBuilder()
 			.implement(BlogController.class, BlogController.class)
 			.build(BlogControllerFactory.class));

@@ -86,7 +86,21 @@ public class BlogSwingMongoModuleTest {
 	}
 	
 	@Test
-	public void testRepositoryFactoryCreatesCorrectImplementation() {		
+	public void testTransactionManagerIsSingleton() {
+		TransactionManager transactionManager1 = injector.getInstance(TransactionManager.class);
+		TransactionManager transactionManager2 = injector.getInstance(TransactionManager.class);
+		assertThat(transactionManager1).isSameAs(transactionManager2);
+	}
+	
+	@Test
+	public void testServiceIsSingleton() {
+		BlogService service1 = injector.getInstance(BlogService.class);
+		BlogService service2 = injector.getInstance(BlogService.class);
+		assertThat(service1).isSameAs(service2);
+	}
+	
+	@Test
+	public void testRepositoryFactoryCreatesCorrectImplementation() {
 		BlogRepositoryFactory factory = injector.getInstance(BlogRepositoryFactory .class);
 		BlogRepository repository = factory.createRepository(session);
 		assertThat(repository)
@@ -99,5 +113,11 @@ public class BlogSwingMongoModuleTest {
 		BlogController controller = factory.create(view);
 		assertThat(controller)
 			.isInstanceOf(BlogController.class); 
+	}
+	
+	@Test
+	public void testViewIsCreatedCorrectly() {
+		view = injector.getInstance(BlogSwingView.class);
+		assertThat(view.getBlogController()).isNotNull();
 	}
 }

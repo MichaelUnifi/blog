@@ -28,7 +28,7 @@ import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JTextComponentFixture;
 
 @RunWith(GUITestRunner.class)
-public class BlogSwingViewTest  extends AssertJSwingJUnitTestCase{
+public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 	
 	@Mock
 	private BlogController blogController;
