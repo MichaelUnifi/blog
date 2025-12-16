@@ -13,6 +13,10 @@ import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
+import org.assertj.swing.timing.Condition;
+import static org.assertj.swing.timing.Timeout.timeout;
+import static org.assertj.swing.timing.Pause.pause;
+
 import static org.assertj.core.api.Assertions.*;
 
 import org.bson.Document;
@@ -87,8 +91,8 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 	@Test @GUITest
 	public void testOnStartAllDatabaseArticlesAreShown() {
 		assertThat(window.list("articleList").contents())
-		.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
-		.anySatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"));
+			.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
+			.anySatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"));
 	}
 	
 	@Test @GUITest
@@ -96,8 +100,16 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		window.textBox("TitleTextBox").enterText("test");
 		window.textBox("ContentTextBox").enterText("test");
 		window.button(JButtonMatcher.withText("Save")).click();
+		pause(new Condition("Article appears in list") {
+			@Override
+			public boolean test() {
+				String[] contents = window.list("articleList").contents();
+				return java.util.Arrays.stream(contents)
+					.anyMatch(e -> e.contains("test"));
+			}
+		}, timeout(5000));
 		assertThat(window.list("articleList").contents())
-		.anySatisfy(e -> assertThat(e).contains("test", "test"));
+			.anySatisfy(e -> assertThat(e).contains("test", "test"));
 	}
 	
 	@Test @GUITest
@@ -109,8 +121,8 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		window.textBox("TitleTextBox").enterText("test");
 		window.button(JButtonMatcher.withText("Save")).click();
 		assertThat(window.list("articleList").contents())
-		.anySatisfy(e -> assertThat(e).contains("test", "test"))
-		.noneSatisfy(e -> assertThat(e).contains(title, content));
+			.anySatisfy(e -> assertThat(e).contains("test", "test"))
+			.noneSatisfy(e -> assertThat(e).contains(title, content));
 	}
 	
 	@Test @GUITest
@@ -122,7 +134,7 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		removeTestArticleToDatabase(id2);
 		window.button(JButtonMatcher.withText("Save")).click();
 		assertThat(window.label("errorMessageLabel").text())
-		.contains("Error in article update", "Article not found with ID: ");
+			.contains("Error in article update", "Article not found with ID: ");
 	}
 	
 	@Test @GUITest
@@ -132,7 +144,7 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		String content = window.textBox("ContentTextBox").text();
 		window.button(JButtonMatcher.withText("Delete")).click();
 		assertThat(window.list("articleList").contents())
-		.noneSatisfy(e -> assertThat(e).contains(title, content));
+			.noneSatisfy(e -> assertThat(e).contains(title, content));
 	}
 	
 	@Test @GUITest
@@ -142,7 +154,7 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		removeTestArticleToDatabase(id2);
 		window.button(JButtonMatcher.withText("Delete")).click();
 		assertThat(window.label("errorMessageLabel").text())
-		.contains("Error in article delete", "Article not found with ID: ");
+			.contains("Error in article delete", "Article not found with ID: ");
 	}
 	
 	@Test @GUITest
@@ -150,8 +162,8 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		window.textBox("FilterTextBox").enterText("cooking");
 		window.button(JButtonMatcher.withText("Filter")).click();
 		assertThat(window.list("articleList").contents())
-		.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
-		.noneSatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"));
+			.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
+			.noneSatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"));
 	}
 	
 	@Test @GUITest
@@ -160,9 +172,9 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		addTestArticleToDatabase(newId, "Steam engines", "Pretty cool stuff", Collections.emptySet());
 		window.button(JButtonMatcher.withText("Reset")).click();
 		assertThat(window.list("articleList").contents())
-		.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
-		.anySatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"))
-		.anySatisfy(e -> assertThat(e).contains("Steam engines", "Pretty cool stuff"));
+			.anySatisfy(e -> assertThat(e).contains("Parmesan eggplants", "I like them"))
+			.anySatisfy(e -> assertThat(e).contains("Blogging is fun", "Try it now"))
+			.anySatisfy(e -> assertThat(e).contains("Steam engines", "Pretty cool stuff"));
 	}
 	
 	@Override
