@@ -193,7 +193,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.textBox("TagTextBox").requireText("cooking");
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testShowAllArticlesClearsAndAddsArticlesDescriptionsToTheList() {
 		String id3 = "000000000000000000000002";
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(
@@ -206,7 +206,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		assertThat(listContents).containsExactly(article1.toString(), article2.toString());
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testShowErrorShouldShowTheMessageInTheErrorLabel() {
 		GuiActionRunner.execute(
 			() -> blogView.showError("error message")
@@ -214,7 +214,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.label("errorMessageLabel").requireText("error message");
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleAddedAddsTheArticleToTheListAndResetsTheErrorLabel() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		GuiActionRunner.execute(() -> blogView.articleAdded(article2));
@@ -223,7 +223,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleUpdatedReplacesTheOriginalArticleInTheListAndResetsTheErrorLabel() {
 		Article article = new Article(id1, title, content);
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article));
@@ -235,7 +235,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleDeletedRemovesTheArticleInTheListAndResetsTheErrorLabel() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article2));
@@ -246,7 +246,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testAddedTagAddsTheTagToTheListAndResetsTheErrorLabel() {
 		window.textBox("TagTextBox").enterText("test");
 		GuiActionRunner.execute(() -> blogView.addedTag(tag));
@@ -258,7 +258,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testAddedTagResetsTheTagTextboxAndButtonsAndSelection() {
 		window.textBox("TagTextBox").enterText("test");
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
@@ -270,7 +270,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button((JButtonMatcher.withText("Remove"))).requireDisabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testAddedTagShouldCheckSaveButton() {
 		window.textBox("TagTextBox").enterText("test");
 		window.textBox("TitleTextBox").setText("test");
@@ -279,7 +279,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button((JButtonMatcher.withText("Save"))).requireEnabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testRemovedTagRemovesTheTagInTheListAndResetsTheErrorLabelAndTagSelection() {
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(new Tag("test")));
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
@@ -291,7 +291,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.list("tagList").requireNoSelection();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testRemovedTagShouldCheckSaveButton() {
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
 		window.list("tagList").selectItem(0);
@@ -301,7 +301,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button((JButtonMatcher.withText("Save"))).requireEnabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testResetButtonShouldResetAllComponents() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		window.list("articleList").selectItem(0);
@@ -322,7 +322,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Filter")).requireDisabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testFilterButtonShouldResetAllComponentsExceptFilterTextbox() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		window.list("articleList").selectItem(0);
@@ -343,7 +343,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Filter")).requireEnabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleAddedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulSave() {
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
 		window.list("tagList").selectItem(0);
@@ -360,7 +360,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleUpdatedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulUpdate() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		window.list("articleList").selectItem(0);
@@ -379,7 +379,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
 	}
 	
-	@Test
+	@Test @GUITest
 	public void testArticleDeletedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulDelete() {
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		window.list("articleList").selectItem(0);

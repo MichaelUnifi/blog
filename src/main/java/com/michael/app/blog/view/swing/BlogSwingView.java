@@ -111,7 +111,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		txtTitle.addKeyListener(btnSaveEnabler);
 		txtTitle.setName("TitleTextBox");
 		GridBagConstraints gbc_txtTitle = new GridBagConstraints();
-		gbc_txtTitle.gridwidth = 6;
+		gbc_txtTitle.gridwidth = 7;
 		gbc_txtTitle.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_txtTitle.gridx = 4;
@@ -158,7 +158,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		txtContent.setName("ContentTextBox");
 		txtContent.addKeyListener(btnSaveEnabler);
 		GridBagConstraints gbc_txtContent = new GridBagConstraints();
-		gbc_txtContent.gridwidth = 6;
+		gbc_txtContent.gridwidth = 7;
 		gbc_txtContent.insets = new Insets(0, 0, 5, 5);
 		gbc_txtContent.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtContent.gridx = 4;
