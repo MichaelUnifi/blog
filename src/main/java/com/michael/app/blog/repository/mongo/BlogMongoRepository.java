@@ -83,12 +83,6 @@ public class BlogMongoRepository implements BlogRepository {
 		);
 	}
 	
-	private Document extractArticleInfo(Article article) {
-		Document doc = articleToDocument(article);
-		doc.remove("_id");
-		return doc;
-	}
-
 	@Override
 	public void delete(String id) {
 		if(id == null)
@@ -96,6 +90,12 @@ public class BlogMongoRepository implements BlogRepository {
 		articleCollection.deleteOne(session, new Document("_id", new ObjectId(id)));
 	}
 
+	private Document extractArticleInfo(Article article) {
+		Document doc = articleToDocument(article);
+		doc.remove("_id");
+		return doc;
+	}
+	
 	private Article documentToArticle(Document doc) {
 		List<String> tagList = doc.getList("tags", String.class);
 		Set<Tag> tags = tagList.stream()

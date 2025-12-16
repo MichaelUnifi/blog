@@ -24,7 +24,7 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
         restore-keys: ${{ runner.os }}-m2-
     - name: Build with Maven
-      run: xvfb-run mvn verify -Pdocker,jacoco,coveralls,mutation-testing
+      run: xvfb-run mvn verify -Pcoveralls,mutation-testing
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,8 +34,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    - name: Junit report
-      run: mvn surefire-report:report-only
+    - name: Junit reports
+      run: mvn surefire-report:report-only surefire-report:failsafe-report-only
       if: ${{ always() }}
     - name: Archive Junit report
       uses: actions/upload-artifact@v4
@@ -43,6 +43,18 @@ jobs:
       with:
         name: surefire-report
         path: '**/target/surefire-reports'
+    - name: Archive failed tests
+      uses: actions/upload-artifact@v4
+      if: ${{ failure() }}
+      with:
+        name: failed-gui-tests-reports
+        path: failed-gui-tests/
+    - name: Archive Junit report
+      uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: failsafe-report
+        path: '**/target/failsafe-reports'
     - name: Archive Jacoco report
       uses: actions/upload-artifact@v4
       if: ${{ always() }}

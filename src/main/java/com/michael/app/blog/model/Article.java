@@ -15,9 +15,9 @@ public class Article {
 		super();
 		this.id = id;
 		if(title == null) throw new IllegalArgumentException("Article title cannot be null!");
-		if(title.equals("")) throw new IllegalArgumentException("Article title cannot be an empty string!");
+		if(title.trim().equals("")) throw new IllegalArgumentException("Article title cannot be an empty string!");
 		if(content == null) throw new IllegalArgumentException("Article content cannot be null!");
-		if(content.equals("")) throw new IllegalArgumentException("Article content cannot be an empty string!");
+		if(content.trim().equals("")) throw new IllegalArgumentException("Article content cannot be an empty string!");
 		this.setTitle(title);
 		this.setContent(content);
 		this.tags = tags;
@@ -80,5 +80,10 @@ public class Article {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Article [title=" + title + ", content=" + content + "]";
 	}
 }

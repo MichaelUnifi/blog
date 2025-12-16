@@ -7,7 +7,7 @@ public class Tag {
 	private String label;
 
 	public Tag(String label) {
-		if(label.trim() == null) throw new IllegalArgumentException("Tag label cannot be null!");
+		if(label == null) throw new IllegalArgumentException("Tag label cannot be null!");
 		if(label.trim().equals("")) throw new IllegalArgumentException("Tag label cannot be blank!");
 		label = label.toLowerCase();
 		this.label = label;
@@ -33,6 +33,11 @@ public class Tag {
 			return false;
 		Tag other = (Tag) obj;
 		return Objects.equals(label, other.label);
+	}
+
+	@Override
+	public String toString() {
+		return "Tag [label=" + label + "]";
 	}
 
 }

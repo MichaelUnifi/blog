@@ -20,7 +20,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	
-	private String mongoHost = "localhost";
+	private String mongoHost = "mongodb://localhost";
 	private int mongoPort = 27017;
 	private String databaseName = "blog";
 	private String collectionName = "blog";
@@ -31,9 +31,9 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 		bind(Integer.class).annotatedWith(MongoPort.class).toInstance(mongoPort);
 		bind(String.class).annotatedWith(MongoDbName.class).toInstance(databaseName);
 		bind(String.class).annotatedWith(MongoCollectionName.class).toInstance(collectionName);
-		bind(TransactionManager.class).to(BlogMongoTransactionManager.class);
-		bind(BlogService.class).to(BlogMongoService.class);
-		bind(BlogView.class).to(BlogSwingView.class).in(Singleton.class);
+		bind(TransactionManager.class).to(BlogMongoTransactionManager.class).in(Singleton.class);
+		bind(BlogService.class).to(BlogMongoService.class).in(Singleton.class);
+		bind(BlogView.class).to(BlogSwingView.class);
 		install(new FactoryModuleBuilder()
 			.implement(BlogController.class, BlogController.class)
 			.build(BlogControllerFactory.class));
@@ -69,7 +69,7 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	}
 	
 	@Provides
-	BlogSwingView studentView(BlogControllerFactory blogControllerFactory) {
+	BlogSwingView blogView(BlogControllerFactory blogControllerFactory) {
 		BlogSwingView view = new BlogSwingView();
 		view.setBlogController(blogControllerFactory.create(view));
 		return view;

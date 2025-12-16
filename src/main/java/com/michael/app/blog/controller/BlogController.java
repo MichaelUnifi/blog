@@ -20,11 +20,19 @@ public class BlogController {
 	}
 	
 	public void allArticles() {
-		view.showAllArticles(service.getAllArticles());
+		try {
+			view.showAllArticles(service.getAllArticles());
+		} catch(Exception e) {
+			view.showError(e.getMessage());
+		}
 	}
 	
 	public void allArticlesWithTag(String tagLabel) {
-		view.showAllArticles(service.getArticlesByTag(tagLabel));
+		try {
+			view.showAllArticles(service.getArticlesByTag(tagLabel));
+		} catch(Exception e) {
+			view.showError(e.getMessage());
+		}
 	}
 	
 	public void saveArticle(String title, String content, Set<String> tagLabels) {

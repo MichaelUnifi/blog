@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static org.assertj.core.api.Assertions.*;
-import org.mockito.Spy;
 
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
@@ -40,8 +39,6 @@ public class BlogControllerTest {
 	private String id;
 	private String title;
 	private String content;
-	
-	@Spy
 	private Article article;
 
 	private Set<String>  tagLabels;
@@ -71,6 +68,14 @@ public class BlogControllerTest {
 	}
 	
 	@Test
+	public void testAllArticlesShowsErrorOnFailure() {
+		when(blogService.getAllArticles()).thenThrow(new RuntimeException("DB ERROR - Could not retrieve documents"));
+		controller.allArticles();
+		verify(blogService).getAllArticles();
+		verify(blogView).showError("DB ERROR - Could not retrieve documents");
+	}
+	
+	@Test
 	public void testAllArticlesWithTag() {
 		String tagLabel = "cooking";
 		article.addTag(new Tag("cooking"));
@@ -79,6 +84,15 @@ public class BlogControllerTest {
 		controller.allArticlesWithTag(tagLabel);
 		verify(blogService).getArticlesByTag(tagLabel);
 		verify(blogView).showAllArticles(articles);
+	}
+	
+	@Test
+	public void testAllArticlesWithTagShowsErrorOnFailure() {
+		String tagLabel = "cooking";
+		when(blogService.getArticlesByTag(tagLabel)).thenThrow(new RuntimeException("DB ERROR - Could not retrieve documents"));
+		controller.allArticlesWithTag(tagLabel);
+		verify(blogService).getArticlesByTag(tagLabel);
+		verify(blogView).showError("DB ERROR - Could not retrieve documents");
 	}
 	
 	@Test
