@@ -104,7 +104,7 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 	}
 	
 	@Test @GUITest
-	public void testUpdateButton() throws InterruptedException {
+	public void testUpdateButton(){
 		window.list("articleList").selectItem(0);
 		String title = window.textBox("TitleTextBox").text();
 		window.textBox("TitleTextBox").setText("");
