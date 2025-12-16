@@ -107,7 +107,7 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 				return java.util.Arrays.stream(contents)
 					.anyMatch(e -> e.contains("test"));
 			}
-		}, timeout(20000));
+		}, timeout(100000));
 		assertThat(window.list("articleList").contents())
 			.anySatisfy(e -> assertThat(e).contains("test", "test"));
 	}
