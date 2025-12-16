@@ -134,7 +134,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		contentPane.add(btnFilter, gbc_btnFilter);
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
 		gbc_btnReset.gridwidth = 2;
-		gbc_btnReset.insets = new Insets(0, 0, 5, 5);
+		gbc_btnReset.insets = new Insets(0, 0, 5, 0);
 		gbc_btnReset.gridx = 14;
 		gbc_btnReset.gridy = 1;
 		btnReset.addActionListener(e -> {
@@ -185,6 +185,12 @@ public class BlogSwingView extends JFrame implements BlogView{
 		contentPane.add(txtFilter, gbc_txtFilter);
 		txtFilter.setColumns(10);
 		
+		btnDeleteArticle = new JButton("Delete");
+		btnDeleteArticle.setEnabled(false);
+		btnDeleteArticle.addActionListener(e -> blogController.deleteArticle(
+			listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId()
+		));
+		
 		btnSaveArticle = new JButton("Save");
 		btnSaveArticle.setEnabled(false);
 		btnSaveArticle.setName("saveArticle");
@@ -204,20 +210,14 @@ public class BlogSwingView extends JFrame implements BlogView{
 				blogController.saveArticle(txtTitle.getText(), txtContent.getText(), tagLabels);
 		});
 		GridBagConstraints gbc_btnSaveArticle = new GridBagConstraints();
-		gbc_btnSaveArticle.gridwidth = 4;
+		gbc_btnSaveArticle.gridwidth = 5;
 		gbc_btnSaveArticle.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnSaveArticle.insets = new Insets(0, 0, 5, 5);
-		gbc_btnSaveArticle.gridx = 4;
+		gbc_btnSaveArticle.gridx = 2;
 		gbc_btnSaveArticle.gridy = 3;
 		contentPane.add(btnSaveArticle, gbc_btnSaveArticle);
-		
-		btnDeleteArticle = new JButton("Delete");
-		btnDeleteArticle.setEnabled(false);
-		btnDeleteArticle.addActionListener(e -> blogController.deleteArticle(
-			listArticlesModel.getElementAt(listArticles.getSelectedIndex()).getId()
-		));
 		GridBagConstraints gbc_btnDeleteArticle = new GridBagConstraints();
-		gbc_btnDeleteArticle.gridwidth = 2;
+		gbc_btnDeleteArticle.gridwidth = 3;
 		gbc_btnDeleteArticle.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnDeleteArticle.insets = new Insets(0, 0, 5, 5);
 		gbc_btnDeleteArticle.gridx = 8;
