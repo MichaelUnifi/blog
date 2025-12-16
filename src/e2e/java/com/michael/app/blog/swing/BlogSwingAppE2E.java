@@ -13,9 +13,6 @@ import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
-import org.assertj.swing.timing.Condition;
-import static org.assertj.swing.timing.Timeout.timeout;
-import static org.assertj.swing.timing.Pause.pause;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -100,29 +97,22 @@ public class BlogSwingAppE2E extends AssertJSwingJUnitTestCase{ // NOSONAR
 		window.textBox("TitleTextBox").enterText("test");
 		window.textBox("ContentTextBox").enterText("test");
 		window.button(JButtonMatcher.withText("Save")).click();
-		pause(new Condition("Article appears in list") {
-			@Override
-			public boolean test() {
-				String[] contents = window.list("articleList").contents();
-				return java.util.Arrays.stream(contents)
-					.anyMatch(e -> e.contains("test"));
-			}
-		}, timeout(100000));
 		assertThat(window.list("articleList").contents())
-			.anySatisfy(e -> assertThat(e).contains("test", "test"));
+			.anySatisfy(e -> assertThat(e).contains("test"));
+		assertThat(window.list("articleList").contents())
+			.anySatisfy(e -> assertThat(e).contains("test"));
 	}
 	
 	@Test @GUITest
-	public void testUpdateButton() {
+	public void testUpdateButton() throws InterruptedException {
 		window.list("articleList").selectItem(0);
 		String title = window.textBox("TitleTextBox").text();
-		String content = window.textBox("ContentTextBox").text();
 		window.textBox("TitleTextBox").setText("");
 		window.textBox("TitleTextBox").enterText("test");
 		window.button(JButtonMatcher.withText("Save")).click();
 		assertThat(window.list("articleList").contents())
-			.anySatisfy(e -> assertThat(e).contains("test", "test"))
-			.noneSatisfy(e -> assertThat(e).contains(title, content));
+			.anySatisfy(e -> assertThat(e).contains("test"))
+			.noneSatisfy(e -> assertThat(e).contains(title));
 	}
 	
 	@Test @GUITest
