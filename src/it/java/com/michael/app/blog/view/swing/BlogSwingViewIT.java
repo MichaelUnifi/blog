@@ -3,43 +3,33 @@ package com.michael.app.blog.view.swing;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
-
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.util.Modules;
 import com.michael.app.blog.controller.BlogController;
 import com.michael.app.blog.guice.BlogSwingMongoDefaultModule;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.service.mongo.BlogMongoService;
-import com.michael.app.blog.view.BlogView;
 
-import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
-import org.assertj.swing.core.matcher.JLabelMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.assertj.swing.fixture.JButtonFixture;
-import org.assertj.swing.fixture.JTextComponentFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 
 @RunWith(GUITestRunner.class)
 public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	
-	@SuppressWarnings({"resource" })
+	@SuppressWarnings({"resource"})
 	private static MongoDBContainer mongoContainer =
 		new MongoDBContainer(DockerImageName.parse("mongo:5"))
 		.withReplicaSet();
@@ -55,6 +45,8 @@ public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	private FrameFixture window;
 
 	private BlogController controller;
+
+	private String id = "000000000000000000000000";
 	
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -88,23 +80,12 @@ public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
-	public void testAllArticles() {
+	public void testShowAllArticles() {
 		Article article1 = service.saveArticle("Parmesan eggplants", "I like them", Collections.emptySet());
 		Article article2 = service.saveArticle("Steam engine", "What's this, 1900?", Collections.emptySet());
 		GuiActionRunner.execute(
 			() -> controller.allArticles());
-		
 		assertThat(window.list("articleList").contents()).containsExactly(article1.toString(), article2.toString());
-	}
-	
-	@Test
-	public void testAllArticlesWithTag() {
-		service.saveArticle("Parmesan eggplants", "I like them", Collections.emptySet());
-		Article article2 = service.saveArticle("Steam engine", "What's this, 1900?", Set.of("trains"));
-		GuiActionRunner.execute(
-			() -> controller.allArticlesWithTag("trains")
-		);
-		assertThat(window.list("articleList").contents()).containsExactly(article2.toString());
 	}
 	
 	@Test
@@ -134,6 +115,20 @@ public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
+	public void testUpdateButtonError() {
+		Article article = new Article(id , "Parmesan eggplants", "I like them", Set.of(new Tag("cooking")));
+		GuiActionRunner.execute(
+			() -> view.getListArticlesModel().addElement(article)
+		);
+		window.list("articleList").selectItem(0);
+		window.textBox("TitleTextBox").setText("");
+		window.textBox("TitleTextBox").enterText("test");
+		window.button(JButtonMatcher.withText("Save")).click();
+		assertThat(window.list("articleList").contents()).containsExactly(article.toString());
+		window.label("errorMessageLabel").requireText("Error in article update - Transaction failed: Article not found with ID: " + id);
+	}
+	
+	@Test
 	public void testDeleteButtonSuccess() {
 		service.saveArticle("Parmesan eggplants", "I like them", Set.of("cooking"));
 		GuiActionRunner.execute(
@@ -145,14 +140,27 @@ public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
+	public void testDeleteButtonError() {
+		Article article = new Article(id , "Parmesan eggplants", "I like them", Set.of(new Tag("cooking")));
+		GuiActionRunner.execute(
+			() -> view.getListArticlesModel().addElement(article)
+		);
+		window.list("articleList").selectItem(0);
+		window.button(JButtonMatcher.withText("Delete")).click();
+		assertThat(window.list("articleList").contents()).containsExactly(article.toString());
+		window.label("errorMessageLabel").requireText("Error in article delete - Transaction failed: Article not found with ID: " + id);
+	}
+	
+	@Test
 	public void testFilterButton() {
-		Article article = service.saveArticle("Parmesan eggplants", "I like them", Set.of("cooking"));
+		service.saveArticle("Parmesan eggplants", "I like them", Collections.emptySet());
+		Article article2 = service.saveArticle("Steam engine", "What's this, 1900?", Set.of("trains"));
 		GuiActionRunner.execute(
 			() -> controller.allArticles()
 		);
-		window.textBox("TitleTextBox").enterText("cooking");
+		window.textBox("FilterTextBox").enterText("trains");
 		window.button(JButtonMatcher.withText("Filter")).click();
-		assertThat(window.list("articleList").contents()).containsExactly(article.toString());
+		assertThat(window.list("articleList").contents()).containsExactly(article2.toString());
 	}
 	
 	@Test
@@ -167,14 +175,14 @@ public class BlogSwingViewIT extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
-	public void testTagButton() {
+	public void testAddButton() {
 		window.textBox("TagTextBox").enterText("cooking");
 		window.button(JButtonMatcher.withText("Add")).click();
 		assertThat(window.list("tagList").contents()).containsExactly(new Tag("cooking").toString());
 	}
 	
 	@Test
-	public void testUnTagButton() {
+	public void testRemoveButton() {
 		service.saveArticle("Parmesan eggplants", "I like them", Set.of("cooking"));
 		GuiActionRunner.execute(
 			() -> controller.allArticles()

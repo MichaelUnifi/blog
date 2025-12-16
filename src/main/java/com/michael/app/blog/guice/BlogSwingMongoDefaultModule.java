@@ -20,7 +20,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	
-	private String mongoHost = "localhost";
+	private String mongoHost = "mongodb://localhost";
 	private int mongoPort = 27017;
 	private String databaseName = "blog";
 	private String collectionName = "blog";
@@ -69,7 +69,7 @@ public class BlogSwingMongoDefaultModule  extends AbstractModule {
 	}
 	
 	@Provides
-	BlogSwingView studentView(BlogControllerFactory blogControllerFactory) {
+	BlogSwingView blogView(BlogControllerFactory blogControllerFactory) {
 		BlogSwingView view = new BlogSwingView();
 		view.setBlogController(blogControllerFactory.create(view));
 		return view;

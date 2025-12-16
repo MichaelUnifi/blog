@@ -43,7 +43,7 @@ public class BlogSwingMongoModuleTest {
 		MockitoAnnotations.openMocks(this);
 		mongoHost = "mongodb://";
 		mongoPort = 12345;
-		databaseName = "test-db)";
+		databaseName = "test-db";
 		collectionName = "blog-test";
 		injector = Guice.createInjector(
 			new BlogSwingMongoDefaultModule()

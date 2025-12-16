@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.swing.DefaultListModel;
+import java.awt.Font;
+import java.awt.Dimension;
 
 public class BlogSwingView extends JFrame implements BlogView{
 	
@@ -58,6 +60,11 @@ public class BlogSwingView extends JFrame implements BlogView{
 		this.blogController = blogController;
 		}
 	
+	public void start() {
+		blogController.allArticles();
+		setVisible(true);
+	}
+	
 	public BlogController getBlogController() {
 		return blogController;
 	}
@@ -71,6 +78,8 @@ public class BlogSwingView extends JFrame implements BlogView{
 	}
 
 	public BlogSwingView() {
+		setSize(new Dimension(700, 550));
+		setTitle("Blog View");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -94,10 +103,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		KeyAdapter btnSaveEnabler = new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				btnSaveArticle.setEnabled(
-					!txtTitle.getText().trim().isEmpty() &&
-					!txtContent.getText().trim().isEmpty()
-				);
+				checkSaveButton();
 			}
 		};
 			
@@ -115,7 +121,10 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		btnFilter = new JButton("Filter");
 		btnFilter.setEnabled(false);
-		btnFilter.addActionListener(arg0 -> blogController.allArticlesWithTag(txtFilter.getText()));
+		btnFilter.addActionListener(arg0 -> {
+			blogController.allArticlesWithTag(txtFilter.getText());
+			clearArticleInteractions();
+		});
 		GridBagConstraints gbc_btnFilter = new GridBagConstraints();
 		gbc_btnFilter.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnFilter.gridwidth = 2;
@@ -128,7 +137,12 @@ public class BlogSwingView extends JFrame implements BlogView{
 		gbc_btnReset.insets = new Insets(0, 0, 5, 5);
 		gbc_btnReset.gridx = 14;
 		gbc_btnReset.gridy = 1;
-		btnReset.addActionListener(e -> blogController.allArticles());
+		btnReset.addActionListener(e -> {
+			blogController.allArticles();
+			clearArticleInteractions();
+			txtFilter.setText("");
+			btnFilter.setEnabled(false);
+		});
 		contentPane.add(btnReset, gbc_btnReset);
 		
 		lblContent = new JLabel("Content");
@@ -256,7 +270,15 @@ public class BlogSwingView extends JFrame implements BlogView{
 		
 		listTagsModel = new DefaultListModel<>();
 		listTags = new JList<>(listTagsModel);
-		listTags.addListSelectionListener(arg0 -> btnUnTag.setEnabled(listTags.getSelectedIndex() != -1));
+		listTags.addListSelectionListener(arg0 -> {
+			if(listTags.getSelectedIndex() != -1) {
+				btnUnTag.setEnabled(true);
+				txtTag.setText(listTags.getSelectedValue().getLabel());
+			} else {
+				btnUnTag.setEnabled(false);
+				txtTag.setText("");
+			}
+		});
 		listTags.setName("tagList");
 		GridBagConstraints gbc_tagList = new GridBagConstraints();
 		gbc_tagList.gridheight = 5;
@@ -306,6 +328,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 		contentPane.add(btnUnTag, gbc_btnUnTag);
 		
 		lblError = new JLabel(" ");
+		lblError.setFont(new Font("Dialog", Font.BOLD, 12));
 		lblError.setName("errorMessageLabel");
 		GridBagConstraints gbc_lblError = new GridBagConstraints();
 		gbc_lblError.fill = GridBagConstraints.VERTICAL;
@@ -335,6 +358,7 @@ public class BlogSwingView extends JFrame implements BlogView{
 	@Override
 	public void articleAdded(Article article) {
 		listArticlesModel.addElement(article);
+		clearArticleInteractions();
 		resetErrorLabel();
 	}
 
@@ -342,25 +366,51 @@ public class BlogSwingView extends JFrame implements BlogView{
 	public void articleUpdated(Article updatedArticle) {
 		int index = listArticles.getSelectedIndex();
 		listArticlesModel.set(index, updatedArticle);
+		clearArticleInteractions();
 		resetErrorLabel();
 	}
 
 	@Override
 	public void articleDeleted() {
 		listArticlesModel.removeElement(listArticles.getSelectedValue());
+		clearArticleInteractions();
 		resetErrorLabel();
 	}
 
 	@Override
 	public void addedTag(Tag tag) {
 		listTagsModel.addElement(tag);
+		listTags.clearSelection();
+		txtTag.setText("");
+		btnTag.setEnabled(false);
+		btnUnTag.setEnabled(false);
+		checkSaveButton();
 		resetErrorLabel();
 	}
 
 	@Override
 	public void removedTag() {
 		listTagsModel.remove(listTags.getSelectedIndex());
+		checkSaveButton();
 		resetErrorLabel();
 	}
+	
+	private void checkSaveButton() {
+		btnSaveArticle.setEnabled(
+			!txtTitle.getText().trim().isEmpty() &&
+			!txtContent.getText().trim().isEmpty()
+		);
+	}
 
+	private void clearArticleInteractions() {
+		listArticles.clearSelection();
+		listTags.clearSelection();
+		txtTitle.setText("");
+		txtContent.setText("");
+		txtTag.setText("");
+		btnSaveArticle.setEnabled(false);
+		btnDeleteArticle.setEnabled(false);
+		btnTag.setEnabled(false);
+		btnUnTag.setEnabled(false);
+	}
 }

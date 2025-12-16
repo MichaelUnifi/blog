@@ -26,7 +26,7 @@ import com.mongodb.client.MongoClient;
 
 public class BlogMongoServiceIT {
 	
-	@SuppressWarnings({"resource" })
+	@SuppressWarnings({"resource"})
 	private static MongoDBContainer mongoContainer =
 		new MongoDBContainer(DockerImageName.parse("mongo:5"))
 		.withReplicaSet();

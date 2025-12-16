@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.inject.Inject;
 import com.michael.app.blog.model.Article;
 import com.michael.app.blog.model.Tag;
 import com.mongodb.client.ClientSession;
@@ -31,7 +30,6 @@ public class BlogMongoRepositoryIT {
 
 	private MongoClient client;
 	private ClientSession session;
-	@Inject
 	private BlogMongoRepository blogRepository;
 	private MongoCollection<Document> articleCollection;
 	private String id1;

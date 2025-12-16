@@ -24,12 +24,13 @@ import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import com.michael.app.blog.guice.BlogSwingMongoDefaultModule;
 import com.michael.app.blog.model.Article;
+import com.michael.app.blog.model.Tag;
 import com.michael.app.blog.service.mongo.BlogMongoService;
 import com.michael.app.blog.view.BlogView;
 
 public class BlogControllerIT {
 
-	@SuppressWarnings({"resource" })
+	@SuppressWarnings({"resource"})
 	private static MongoDBContainer mongoContainer =
 		new MongoDBContainer(DockerImageName.parse("mongo:5"))
 		.withReplicaSet();
@@ -138,5 +139,11 @@ public class BlogControllerIT {
 	public void testDeleteArticleError() {
 		controller.deleteArticle(id);
 		verify(view).showError("Error in article delete - Transaction failed: Article not found with ID: " + id);
+	}
+	
+	@Test
+	public void testTag() {
+		controller.tag("cooking");
+		verify(view).addedTag(new Tag("cooking"));
 	}
 }

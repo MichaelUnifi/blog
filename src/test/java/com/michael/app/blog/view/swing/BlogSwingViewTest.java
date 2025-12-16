@@ -93,6 +93,13 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
+	@Test
+	public void startShouldCallControllerAllArticlesAndSetShowingToTrue() {
+		GuiActionRunner.execute(() -> blogView.start());
+		verify(blogController).allArticles();
+		window.requireVisible();
+	}
+	
 	@Test @GUITest
 	public void testWhenTitleAndContentAreNotEmptySaveIsEnabled() {
 		window.textBox("TitleTextBox").enterText("test");
@@ -146,7 +153,6 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		window.button(JButtonMatcher.withText("Add")).requireDisabled();
 		window.textBox("TagTextBox").enterText(" ");
 		window.button(JButtonMatcher.withText("Add")).requireDisabled();
-
 	}
 	
 	@Test @GUITest
@@ -170,7 +176,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test @GUITest
-	public void testWhenStudentIsSelectedTitleContentAndTagsAreShown() {
+	public void testWhenArticleIsSelectedTitleContentAndTagsAreShown() {
 		article1.addTag(tag);
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
 		window.list("articleList").selectItem(0);
@@ -180,10 +186,18 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 		assertThat(listContents).containsExactly(tag.toString());
 	}
 	
+	@Test @GUITest
+	public void testWhenATagIsSelectedTagLabelIsShown() {
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("TagTextBox").requireText("cooking");
+	}
+	
 	@Test
 	public void testShowAllArticlesClearsAndAddsArticlesDescriptionsToTheList() {
+		String id3 = "000000000000000000000002";
 		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(
-			new Article("000000000000000000000002", "Steak", "My favourite")
+			new Article(id3, "Steak", "My favourite")
 		));
 		GuiActionRunner.execute(() ->
 			blogView.showAllArticles(Arrays.asList(article1, article2))
@@ -234,28 +248,160 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 	
 	@Test
 	public void testAddedTagAddsTheTagToTheListAndResetsTheErrorLabel() {
+		window.textBox("TagTextBox").enterText("test");
 		GuiActionRunner.execute(() -> blogView.addedTag(tag));
 		String[] listContents = window.list("tagList").contents();
 		assertThat(listContents).containsExactly(tag.toString());
 		window.label("errorMessageLabel").requireText(" ");
+		window.textBox("TagTextBox").requireText("");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
 	}
 	
 	@Test
-	public void testRemovedTagRemovesTheTagInTheListAndResetsTheErrorLabel() {
+	public void testAddedTagResetsTheTagTextboxAndButtonsAndSelection() {
+		window.textBox("TagTextBox").enterText("test");
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.addedTag(new Tag("test")));
+		window.textBox("TagTextBox").requireText("");
+		window.list("tagList").requireNoSelection();
+		window.button((JButtonMatcher.withText("Add"))).requireDisabled();
+		window.button((JButtonMatcher.withText("Remove"))).requireDisabled();
+	}
+	
+	@Test
+	public void testAddedTagShouldCheckSaveButton() {
+		window.textBox("TagTextBox").enterText("test");
+		window.textBox("TitleTextBox").setText("test");
+		window.textBox("ContentTextBox").setText("test");
+		GuiActionRunner.execute(() -> blogView.addedTag(tag));
+		window.button((JButtonMatcher.withText("Save"))).requireEnabled();
+	}
+	
+	@Test
+	public void testRemovedTagRemovesTheTagInTheListAndResetsTheErrorLabelAndTagSelection() {
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(new Tag("test")));
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
 		window.list("tagList").selectItem(0);
 		GuiActionRunner.execute(() -> blogView.removedTag());
 		String[] listContents = window.list("tagList").contents();
-		assertThat(listContents).isEmpty();
+		assertThat(listContents).containsExactly(tag.toString());
 		window.label("errorMessageLabel").requireText(" ");
+		window.list("tagList").requireNoSelection();
+	}
+	
+	@Test
+	public void testRemovedTagShouldCheckSaveButton() {
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("TitleTextBox").setText("test");
+		window.textBox("ContentTextBox").setText("test");
+		GuiActionRunner.execute(() -> blogView.removedTag());
+		window.button((JButtonMatcher.withText("Save"))).requireEnabled();
+	}
+	
+	@Test
+	public void testResetButtonShouldResetAllComponents() {
+		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
+		window.list("articleList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("FilterTextBox").enterText("test");
+		window.button(JButtonMatcher.withText("Reset")).click();
+		window.textBox("TitleTextBox").requireEmpty();
+		window.textBox("ContentTextBox").requireEmpty();
+		window.textBox("TagTextBox").requireEmpty();
+		window.textBox("FilterTextBox").requireEmpty();
+		window.list("articleList").requireNoSelection();
+		window.list("tagList").requireNoSelection();
+		window.button(JButtonMatcher.withText("Save")).requireDisabled();
+		window.button(JButtonMatcher.withText("Delete")).requireDisabled();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
+		window.button(JButtonMatcher.withText("Filter")).requireDisabled();
+	}
+	
+	@Test
+	public void testFilterButtonShouldResetAllComponentsExceptFilterTextbox() {
+		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
+		window.list("articleList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("FilterTextBox").enterText("test");
+		window.button(JButtonMatcher.withText("Filter")).click();
+		window.textBox("TitleTextBox").requireEmpty();
+		window.textBox("ContentTextBox").requireEmpty();
+		window.textBox("TagTextBox").requireEmpty();
+		window.textBox("FilterTextBox").requireText("test");
+		window.list("articleList").requireNoSelection();
+		window.list("tagList").requireNoSelection();
+		window.button(JButtonMatcher.withText("Save")).requireDisabled();
+		window.button(JButtonMatcher.withText("Delete")).requireDisabled();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
+		window.button(JButtonMatcher.withText("Filter")).requireEnabled();
+	}
+	
+	@Test
+	public void testArticleAddedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulSave() {
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("TitleTextBox").setText("");
+		window.textBox("TitleTextBox").enterText("test");
+		GuiActionRunner.execute(() -> blogView.articleAdded(article2));
+		window.textBox("TitleTextBox").requireEmpty();
+		window.textBox("ContentTextBox").requireEmpty();
+		window.list("articleList").requireNoSelection();
+		window.list("tagList").requireNoSelection();
+		window.button(JButtonMatcher.withText("Save")).requireDisabled();
+		window.button(JButtonMatcher.withText("Delete")).requireDisabled();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
+	}
+	
+	@Test
+	public void testArticleUpdatedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulUpdate() {
+		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
+		window.list("articleList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		window.textBox("TitleTextBox").setText("");
+		window.textBox("TitleTextBox").enterText("test");
+		GuiActionRunner.execute(() -> blogView.articleUpdated(article1));
+		window.textBox("TitleTextBox").requireEmpty();
+		window.textBox("ContentTextBox").requireEmpty();
+		window.list("articleList").requireNoSelection();
+		window.list("tagList").requireNoSelection();
+		window.button(JButtonMatcher.withText("Save")).requireDisabled();
+		window.button(JButtonMatcher.withText("Delete")).requireDisabled();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
+	}
+	
+	@Test
+	public void testArticleDeletedShouldResetAllComponentsExceptFilterComponentsOnSuccessfulDelete() {
+		GuiActionRunner.execute(() -> blogView.getListArticlesModel().addElement(article1));
+		window.list("articleList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
+		window.list("tagList").selectItem(0);
+		GuiActionRunner.execute(() -> blogView.articleDeleted());
+		window.textBox("TitleTextBox").requireEmpty();
+		window.textBox("ContentTextBox").requireEmpty();
+		window.list("articleList").requireNoSelection();
+		window.list("tagList").requireNoSelection();
+		window.button(JButtonMatcher.withText("Save")).requireDisabled();
+		window.button(JButtonMatcher.withText("Delete")).requireDisabled();
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		window.button(JButtonMatcher.withText("Remove")).requireDisabled();
 	}
 	
 	@Test
 	public void testSaveButtonShouldDelegateToBlogControllerSaveArticleWhenNoArticleIsSelected() {
-		window.textBox("TitleTextBox").enterText(title);
-		window.textBox("ContentTextBox").enterText(content);
+		window.textBox("TitleTextBox").enterText("test");
+		window.textBox("ContentTextBox").enterText("test");
 		window.button(JButtonMatcher.withText("Save")).click();
-		verify(blogController).saveArticle(title, content, tagLabels);
+		verify(blogController).saveArticle("test", "test", tagLabels);
 	}
 	
 	@Test
@@ -297,7 +443,7 @@ public class BlogSwingViewTest extends AssertJSwingJUnitTestCase{
 	}
 	
 	@Test
-	public void testRemoveShouldCallStudentRemoved() {
+	public void testRemoveShouldCallArticleRemoved() {
 		GuiActionRunner.execute(() -> blogView.getListTagsModel().addElement(tag));
 		window.list("tagList").selectItem(0);
 		window.button(JButtonMatcher.withText("Remove")).click();

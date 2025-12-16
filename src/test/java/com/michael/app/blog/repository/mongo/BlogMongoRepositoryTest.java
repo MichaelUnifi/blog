@@ -50,11 +50,10 @@ public class BlogMongoRepositoryTest {
 	public static void setUpServer() {
 		Version.Main version = Version.Main.V8_1;
 		server = Mongod.instance().transitions(version)
-		.walker()
-		.initState(StateID.of(RunningMongodProcess.class));
-
+			.walker()
+			.initState(StateID.of(RunningMongodProcess.class));
 		ServerAddress addr = server.current().getServerAddress();
-		connectionString = String.format("mongodb://%s:%d", addr.getHost(), addr.getPort());
+		connectionString = "mongodb://" + addr.getHost() + ":" + addr.getPort();
 	}
 
 	@AfterClass

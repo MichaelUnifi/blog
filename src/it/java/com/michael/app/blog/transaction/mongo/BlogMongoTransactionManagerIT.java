@@ -29,7 +29,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class BlogMongoTransactionManagerIT {
 	
-	@SuppressWarnings({"resource" })
+	@SuppressWarnings({"resource"})
 	private static MongoDBContainer mongoContainer =
 		new MongoDBContainer(DockerImageName.parse("mongo:5"))
 		.withReplicaSet();
